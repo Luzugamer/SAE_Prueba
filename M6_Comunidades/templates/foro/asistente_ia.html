@@ -1,0 +1,87 @@
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #ccefff, #a3d5ff);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+    }
+
+    .chat-container {
+        max-width: 700px;
+        margin: 60px auto;
+        background-color: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        color: #0077b6;
+        text-align: center;
+    }
+
+    input[type="text"] {
+        width: 80%;
+        padding: 10px;
+        font-size: 16px;
+        border: 2px solid #0077b6;
+        border-radius: 10px;
+        margin-right: 10px;
+    }
+
+    button {
+        padding: 10px 15px;
+        font-size: 16px;
+        background-color: #0077b6;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    #respuesta {
+        margin-top: 30px;
+        background-color: #e6f7ff;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 16px;
+        color: #004a6e;
+        white-space: pre-wrap;
+    }
+</style>
+
+<div class="chat-container">
+    <h2>Asistente de Estudio IA</h2>
+    <form id="formulario-pregunta" method="post">
+        {% csrf_token %}
+        <input type="text" name="pregunta" id="pregunta" placeholder="Escribe tu pregunta aquí..." required>
+        <button type="submit">Preguntar</button>
+    </form>
+    <div id="respuesta"></div>
+</div>
+
+<script>
+document.getElementById('formulario-pregunta').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const pregunta = document.getElementById('pregunta').value;
+
+    fetch("{% url 'comunidad:asistente_ia' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `pregunta=${encodeURIComponent(pregunta)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('respuesta').innerText = data.respuesta;
+    })
+    .catch(error => {
+        document.getElementById('respuesta').innerText = 'Ocurrió un error al conectar con el asistente.';
+    });
+});
+</script>
+{% endblock %}

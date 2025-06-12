@@ -1,0 +1,45 @@
+/* Optimización de animaciones */
+[data-animation-name] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease-out;
+}
+
+[data-animation-name].animated {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Mejoras en responsividad */
+.auth-buttons-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+.auth-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    margin: 0 5px;
+    border-radius: 25px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.register-btn {
+    background: linear-gradient(45deg, #0ac4f2d1, #00b8d0ce);
+    color: white;
+}
+
+.login-btn {
+    background: linear-gradient(45deg, #0700c8, #0063c6);
+    color: white;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}

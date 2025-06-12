@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nueva Comunidad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 50%, #E0F6FF 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2C5282;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .creation-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .form-section h2 {
+            color: #2C5282;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2C5282;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.8);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4299E1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+            transform: translateY(-2px);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .icon-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .icon-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px dashed #4299E1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(66, 153, 225, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .icon-preview:hover {
+            transform: scale(1.05);
+            border-color: #2B6CB0;
+        }
+
+        .icon-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .icon-text {
+            color: #4299E1;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .preview-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .community-preview {
+            border: 2px solid #E2E8F0;
+            border-radius: 15px;
+            padding: 20px;
+            background: linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 100%);
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        .preview-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #4299E1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .preview-info h3 {
+            color: #2C5282;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+
+        .preview-info p {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .community-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #E2E8F0;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2C5282;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .community-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #4299E1;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #E2E8F0;
+            color: #2C5282;
+        }
+
+        .btn-danger {
+            background: #F56565;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .submit-section {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #4299E1 0%, #2B6CB0 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
+        }
+
+        .btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(66, 153, 225, 0.4);
+        }
+
+        .btn-create:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-circle:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-circle:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-circle:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .members-preview {
+            margin-top: 15px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.6);
+            margin-bottom: 5px;
+        }
+
+        .member-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #4299E1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-size: 0.9rem;
+            color: #2C5282;
+            font-weight: 600;
+        }
+
+        .member-role {
+            font-size: 0.7rem;
+            color: #718096;
+        }
+
+        @media (max-width: 768px) {
+            .creation-area {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-section, .preview-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Crear Nueva Comunidad</h1>
+            <p>Dale vida a tu espacio de aprendizaje colaborativo</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" id="crear-comunidad-form">
+            {% csrf_token %}
+            
+            <div class="creation-area">
+                <!-- Formulario de creación -->
+                <div class="form-section">
+                    <h2>📝 Información de la Comunidad</h2>
+                    
+                    <div class="form-group">
+                        <label for="nombre">Nombre de la Comunidad *</label>
+                        <input type="text" id="nombre" name="nombre" class="form-control" 
+                               placeholder="Ej: Matemáticas Avanzadas 2024" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcion">Descripción *</label>
+                        <textarea id="descripcion" name="descripcion" class="form-control" 
+                                  placeholder="Describe el propósito y objetivos de tu comunidad..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="institucion_afiliada">Institución Afiliada</label>
+                        <input type="text" id="institucion_afiliada" name="institucion_afiliada" class="form-control" 
+                               placeholder="Ej: Universidad Nacional de Ucayali">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ícono de la Comunidad</label>
+                        <div class="icon-upload">
+                            <input type="file" id="icono" name="icono" accept="image/*" style="display: none;">
+                            <div class="icon-preview" onclick="document.getElementById('icono').click();">
+                                <span id="icon-placeholder">📚</span>
+                                <img id="icon-image" style="display: none;">
+                            </div>
+                            <div class="icon-text">Haz clic para subir</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vista previa de la comunidad -->
+                <div class="preview-section">
+                    <h2>👀 Vista Previa</h2>
+                    <div class="community-preview">
+                        <div class="preview-header">
+                            <div class="preview-icon" id="preview-icon">📚</div>
+                            <div class="preview-info">
+                                <h3 id="preview-name">Nombre de la Comunidad</h3>
+                                <p id="preview-institution">Institución</p>
+                            </div>
+                        </div>
+
+                        <div class="community-stats">
+                            <div class="stat-card">
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">Puntos de Prestigio</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">1</div>
+                                <div class="stat-label">Miembros</div>
+                            </div>
+                        </div>
+
+                        <div class="members-preview">
+                            <h4 style="color: #2C5282; margin-bottom: 10px; font-size: 0.9rem;">👥 Miembros Activos</h4>
+                            <div class="member-item">
+                                <div class="member-avatar">{{ user.first_name.0|default:"U" |upper }}</div>
+                                <div class="member-info">
+                                    <div class="member-name">{{ user.get_full_name|default:"Usuario Desconocido" }}</div>
+                                    <div class="member-role">Profesor (Creador)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="community-actions">
+                            <button type="button" class="action-btn btn-primary">✏️ Editar</button>
+                            <button type="button" class="action-btn btn-secondary">👥 Invitar</button>
+                            <button type="button" class="action-btn btn-danger">🚫 Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" class="btn-create" id="btn-crear">
+                    🚀 Crear Comunidad
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Preview en tiempo real
+        document.getElementById('nombre').addEventListener('input', function() {
+            const preview = document.getElementById('preview-name');
+            preview.textContent = this.value || 'Nombre de la Comunidad';
+        });
+
+        document.getElementById('institucion_afiliada').addEventListener('input', function() {
+            const preview = document.getElementById('preview-institution');
+            preview.textContent = this.value || 'Institución';
+        });
+
+        // Preview del ícono
+        document.getElementById('icono').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const placeholder = document.getElementById('icon-placeholder');
+                    const image = document.getElementById('icon-image');
+                    const previewIcon = document.getElementById('preview-icon');
+                    
+                    placeholder.style.display = 'none';
+                    image.style.display = 'block';
+                    image.src = e.target.result;
+                    
+                    previewIcon.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Validación del formulario
+        document.getElementById('crear-comunidad-form').addEventListener('submit', function(e) {
+            const nombre = document.getElementById('nombre').value.trim();
+            const descripcion = document.getElementById('descripcion').value.trim();
+            
+            if (!nombre || !descripcion) {
+                e.preventDefault();
+                alert('Por favor completa todos los campos requeridos.');
+                return;
+            }
+            
+            const btnCrear = document.getElementById('btn-crear');
+            btnCrear.disabled = true;
+            btnCrear.innerHTML = '⏳ Creando...';
+        });
+
+        // Animación de entrada
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.form-section, .preview-section');
+            elements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</body>
+<script>
+// Verificación de nombre en tiempo real
+let timeoutId;
+document.getElementById('nombre').addEventListener('input', function() {
+    const nombre = this.value.trim();
+    const preview = document.getElementById('preview-name');
+    preview.textContent = nombre || 'Nombre de la Comunidad';
+    
+    // Limpiar timeout anterior
+    clearTimeout(timeoutId);
+    
+    // Verificar disponibilidad después de 1 segundo de inactividad
+    if (nombre.length >= 3) {
+        timeoutId = setTimeout(() => {
+            verificarNombreDisponible(nombre);
+        }, 1000);
+    }
+});
+
+function verificarNombreDisponible(nombre) {
+    fetch('{% url "comunidad:verificar_nombre_comunidad" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `nombre=${encodeURIComponent(nombre)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        const nombreInput = document.getElementById('nombre');
+        const existingFeedback = nombreInput.parentNode.querySelector('.feedback-message');
+        
+        // Remover mensaje anterior
+        if (existingFeedback) {
+            existingFeedback.remove();
+        }
+        
+        // Agregar nuevo mensaje
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.className = 'feedback-message';
+        feedbackDiv.style.fontSize = '0.8rem';
+        feedbackDiv.style.marginTop = '5px';
+        
+        if (data.disponible) {
+            feedbackDiv.style.color = '#48BB78';
+            feedbackDiv.innerHTML = '✅ ' + data.mensaje;
+            nombreInput.style.borderColor = '#48BB78';
+        } else {
+            feedbackDiv.style.color = '#F56565';
+            feedbackDiv.innerHTML = '❌ ' + data.mensaje;
+            nombreInput.style.borderColor = '#F56565';
+        }
+        
+        nombreInput.parentNode.appendChild(feedbackDiv);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+// Contador de caracteres para descripción
+document.getElementById('descripcion').addEventListener('input', function() {
+    const maxLength = 500; // Límite recomendado
+    const currentLength = this.value.length;
+    
+    let counter = this.parentNode.querySelector('.char-counter');
+    if (!counter) {
+        counter = document.createElement('div');
+        counter.className = 'char-counter';
+        counter.style.fontSize = '0.8rem';
+        counter.style.color = '#718096';
+        counter.style.textAlign = 'right';
+        counter.style.marginTop = '5px';
+        this.parentNode.appendChild(counter);
+    }
+    
+    counter.textContent = `${currentLength}/${maxLength} caracteres`;
+    
+    if (currentLength > maxLength) {
+        counter.style.color = '#F56565';
+        this.style.borderColor = '#F56565';
+    } else {
+        counter.style.color = '#718096';
+        this.style.borderColor = '#E2E8F0';
+    }
+});
+</script>
+
+</html>

@@ -1,0 +1,27 @@
+<h2>{{ comunidad.nombre }}</h2>
+<div>
+  {% for mensaje in mensajes %}
+    <div style="margin-bottom: 1em;">
+      <img src="{{ mensaje.autor.perfil.avatar.url }}" width="30" height="30" style="border-radius: 50%;">
+      <strong>{{ mensaje.autor.username }}</strong>: {{ mensaje.contenido }}
+    </div>
+  {% endfor %}
+</div>
+
+<form method="POST">
+  {% csrf_token %}
+  <textarea name="contenido" placeholder="Escribe tu mensaje aquí..."></textarea>
+  <button type="submit">Enviar</button>
+</form>
+<p>{{ comunidad.descripcion }}</p>
+<form method="post">
+  {% csrf_token %}
+  <textarea name="contenido" placeholder="Escribe tu mensaje..." required></textarea><br>
+  <button type="submit">Enviar</button>
+</form>
+<hr>
+<div>
+  {% for mensaje in mensajes %}
+    <p><strong>{{ mensaje.autor.username }}:</strong> {{ mensaje.contenido }}</p>
+  {% endfor %}
+</div>

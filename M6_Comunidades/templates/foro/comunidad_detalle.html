@@ -1,0 +1,26 @@
+<!-- En el área de información de la comunidad -->
+{% if es_creador %}
+<div class="community-admin-actions">
+    <a href="{% url 'comunidad:editar_comunidad' comunidad.id %}" class="btn btn-primary">
+        ✏️ Editar Comunidad
+    </a>
+    <a href="{% url 'comunidad:gestionar_miembros' comunidad.id %}" class="btn btn-secondary">
+        👥 Gestionar Miembros
+    </a>
+    <a href="{% url 'comunidad:eliminar_comunidad' comunidad.id %}" class="btn btn-danger" 
+       onclick="return confirm('¿Estás seguro de que quieres eliminar esta comunidad?')">
+        🗑️ Eliminar Comunidad
+    </a>
+</div>
+{% endif %}
+
+{% if es_miembro %}
+<div class="community-member-actions">
+    <a href="{% url 'comunidad:invitar_estudiantes' comunidad.id %}" class="btn btn-info">
+        📧 Invitar Estudiantes
+    </a>
+    <a href="{% url 'comunidad:compartir_comunidad' comunidad.id %}" class="btn btn-success">
+        🔗 Compartir Comunidad
+    </a>
+</div>
+{% endif %}

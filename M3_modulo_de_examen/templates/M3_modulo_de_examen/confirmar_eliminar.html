@@ -1,0 +1,64 @@
+{% extends "Pages/base.html" %}
+{% block title %}Confirmar Eliminación - {{ examen.titulo }}{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h2 class="mb-0">Confirmar Eliminación</h2>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <h4><i class="fas fa-exclamation-triangle"></i> ¿Está seguro?</h4>
+                <p>Está a punto de eliminar el examen <strong>"{{ examen.titulo }}"</strong>.</p>
+                <p>Esta acción eliminará:</p>
+                <ul>
+                    <li>Todas las preguntas del examen</li>
+                    <li>Todas las respuestas de los estudiantes</li>
+                    <li>Todos los resultados y estadísticas</li>
+                </ul>
+                <p><strong>Esta acción no se puede deshacer.</strong></p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Sí, eliminar examen
+                    </button>
+                    <a href="{% url 'lista_examenes_curso' examen.curso.codigo %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Botón volver arriba -->
+<button onclick="topFunction()" id="volverArriba" title="Volver arriba" 
+        style="display: none; position: fixed; bottom: 20px; right: 30px; z-index: 99; 
+               font-size: 18px; border: none; outline: none; background-color: #007bff; 
+               color: white; cursor: pointer; padding: 15px; border-radius: 4px;">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        document.getElementById("volverArriba").style.display = "block";
+    } else {
+        document.getElementById("volverArriba").style.display = "none";
+    }
+}
+
+function topFunction() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+}
+</script>
+{% endblock %}

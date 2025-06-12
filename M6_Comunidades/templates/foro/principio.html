@@ -1,0 +1,525 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunidades de Estudio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #88d8c0 25%, #7fcdcd 50%, #78c2ad 75%, #81c784 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #34495e;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .welcome-image {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            animation: pulse 2s infinite;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #2c3e50;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .featured-section {
+            margin: 40px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .comunidades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .comunidad-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .comunidad-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .comunidad-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .comunidad-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .comunidad-card p {
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .sidebar {
+            position: fixed;
+            right: -350px;
+            top: 0;
+            width: 350px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .sidebar h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-comunidad {
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(106, 177, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-comunidad:hover {
+            background: rgba(106, 177, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-confirm {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .floating-ai {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .floating-ai:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .nav-buttons { flex-direction: column; align-items: center; }
+            .sidebar { width: 100%; right: -100%; }
+            .comunidades-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón toggle sidebar -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
+    <!-- Sidebar deslizable -->
+    <div class="sidebar" id="sidebar">
+        <h3>🌟 Todas las Comunidades</h3>
+        <div class="sidebar-comunidades">
+            {% for comunidad in todas_comunidades %}
+                <div class="sidebar-comunidad" 
+                    data-nombre="{{ comunidad.nombre|escapejs }}" 
+                    data-id="{{ comunidad.id }}"
+                    onclick="mostrarModal(this.dataset.nombre, this.dataset.id)">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="comunidad-icon">
+                            {% if comunidad.icono %}
+                                <img src="{{ comunidad.icono.url }}" alt="{{ comunidad.nombre }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                🏫
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; color: #2c3e50;">{{ comunidad.nombre }}</h4>
+                            <p style="margin: 0; font-size: 0.8rem; color: #666;">{{ comunidad.descripcion|truncatechars:50 }}</p>
+                            <small style="color: #888;">👥 {{ comunidad.miembros.count }} miembros</small>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="color: #666; text-align: center;">No hay comunidades disponibles</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header Principal -->
+        <div class="header">
+            <div class="welcome-image">🎓</div>
+            <h1>BIENVENIDO A LAS COMUNIDADES</h1>
+            <p>Conecta, aprende y colabora con estudiantes y profesores de todo el mundo</p>
+            <p style="font-size: 1rem; color: #555;">Únete a comunidades de estudio, participa en discusiones y expande tu conocimiento</p>
+        </div>
+
+            <!-- Navegación principal -->
+            <div class="nav-buttons">
+                {% if user.is_authenticated %}
+                <a href="{% url 'comunidad:crear_comunidad' %}" class="btn">
+                    ➕ Crear Comunidad
+                </a>
+                <a href="{% url 'comunidad:mis_comunidad' %}" class="btn">
+                    👤 Mis Comunidades
+                </a>
+                <a href="{% url 'comunidad:buscar_comunidades' %}" class="btn">
+                    🔍 Buscar Comunidades
+                </a>
+                {% endif %}
+            </div>
+
+        <!-- Sección de comunidades destacadas -->
+        <div class="featured-section">
+            <h2 class="section-title">🌟 Comunidades Destacadas</h2>
+            <div class="comunidades-grid">
+                {% for comunidad in comunidades_destacadas %}
+                    <div class="comunidad-card">
+                        <div class="comunidad-icon">
+                            {% if comunidad.icono %}
+                                <img src="{{ comunidad.icono.url }}" alt="{{ comunidad.nombre }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                🏫
+                            {% endif %}
+                        </div>
+                        <h3>{{ comunidad.nombre }}</h3>
+                        <p>{{ comunidad.descripcion|truncatechars:100 }}</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                            <small style="color: #666;">
+                                👥 {{ comunidad.miembros.count }} miembros<br>
+                                ⭐ {{ comunidad.puntos_prestigio }} puntos
+                            </small>
+                            {% if user.is_authenticated %}
+                                <button class="btn" 
+                                        data-nombre="{{ comunidad.nombre|escapejs }}" 
+                                        data-id="{{ comunidad.id }}"
+                                        onclick="mostrarModal(this.dataset.nombre, this.dataset.id)" 
+                                        style="padding: 8px 15px; font-size: 0.9rem;">
+                                    Ver Más
+                                </button>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn" style="padding: 8px 15px; font-size: 0.9rem;">
+                                    Iniciar Sesión
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <h3>No hay comunidades destacadas disponibles</h3>
+                        <p>¡Sé el primero en crear una comunidad!</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="featured-section">
+            <h2 class="section-title">📚 ¿Cómo funciona?</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🔍</div>
+                    <h3 style="color: #2c3e50; margin-bottom: 10px;">Explora</h3>
+                    <p style="color: #666;">Busca y descubre comunidades que se ajusten a tus intereses académicos</p>
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🤝</div>
+                    <h3 style="color: #2c3e50; margin-bottom: 10px;">Conecta</h3>
+                    <p style="color: #666;">Únete a comunidades y conecta con estudiantes y profesores</p>
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">📖</div>
+                    <h3 style="color: #2c3e50; margin-bottom: 10px;">Aprende</h3>
+                    <p style="color: #666;">Participa en discusiones y comparte conocimiento</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div class="modal" id="joinModal">
+        <div class="modal-content">
+            <h3 style="color: #2c3e50;">¿Seguro que quieres unirte a esta comunidad?</h3>
+            <p id="modalCommunityName" style="font-weight: bold; color: #555; margin: 15px 0;"></p>
+            <p style="color: #666; font-size: 0.9rem;">Al unirte podrás participar en discusiones y acceder a contenido exclusivo.</p>
+            <div class="modal-buttons">
+                <button class="btn-confirm" onclick="confirmarUnion()">Sí, unirme</button>
+                <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón flotante Asistente IA -->
+    <div class="floating-ai" 
+        data-url="{% url 'comunidad:asistente_ia' %}"
+        onclick="window.location.href=this.dataset.url">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+        </svg>
+    </div>
+
+    <script>
+        let currentCommunityId = null;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        function mostrarModal(nombreComunidad, comunidadId) {
+            document.getElementById('modalCommunityName').textContent = nombreComunidad;
+            currentCommunityId = comunidadId;
+            document.getElementById('joinModal').style.display = 'block';
+        }
+
+        function cerrarModal() {
+            document.getElementById('joinModal').style.display = 'none';
+            currentCommunityId = null;
+        }
+
+        function confirmarUnion() {
+            if (currentCommunityId) {
+                window.location.href = `/comunidad/${currentCommunityId}/`;
+            }
+            cerrarModal();
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('joinModal');
+            if (event.target === modal) {
+                cerrarModal();
+            }
+        }
+
+        // Cerrar sidebar al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.sidebar-toggle');
+            
+            if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Animaciones al cargar
+        window.addEventListener('load', function() {
+            const cards = document.querySelectorAll('.comunidad-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.animation = 'fadeInUp 0.6s ease forwards';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

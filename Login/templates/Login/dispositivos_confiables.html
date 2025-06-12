@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Dispositivos</title>
+    <link rel="stylesheet" href="{% static 'login/dispositivos.css' %}">
+</head>
+<body>
+<div class="devices-container">
+
+    <div class="devices-header">
+        <h2>🔒 Mis Dispositivos Confiables</h2>
+        <a href="#" onclick="history.back()" class="btn btn-secondary">← Volver</a>
+    </div>
+
+    <div class="alert-info">
+        <strong>💡 ¿Qué son los dispositivos confiables?</strong>
+        <p>Los dispositivos marcados como confiables no requerirán verificación 2FA durante 30 días. 
+        Puedes revocar el acceso de cualquier dispositivo en cualquier momento, excepto el dispositivo principal.</p>
+    </div>
+
+    {% if dispositivos %}
+        {% for dispositivo in dispositivos %}
+        <div class="device-card">
+            <div class="device-header">
+                <div class="device-name">
+                    {{ dispositivo.nombre_dispositivo|default:"Dispositivo desconocido" }}
+                </div>
+                <div class="device-status {% if dispositivo.es_confiable %}trusted{% else %}untrusted{% endif %}">
+                    {% if dispositivo.es_confiable %}
+                        ✓ Confiable
+                        {% if dispositivo.es_principal %}
+                            <span class="badge-principal">⭐ Principal</span>
+                        {% endif %}
+                    {% else %}
+                        ⚠ No confiable
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="device-info">
+                <div class="info-item"><span class="info-label">Sistema Operativo</span><span class="info-value">{{ dispositivo.sistema_operativo|default:"Desconocido" }}</span></div>
+                <div class="info-item"><span class="info-label">Navegador</span><span class="info-value">{{ dispositivo.navegador|default:"Desconocido" }}</span></div>
+                <div class="info-item"><span class="info-label">Ubicación</span>
+                    <span class="info-value">
+                        {% if dispositivo.ciudad and dispositivo.pais %}
+                            {{ dispositivo.ciudad }}, {{ dispositivo.pais }}
+                        {% else %}
+                            Desconocida
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item"><span class="info-label">Último Acceso</span><span class="info-value">{{ dispositivo.ultimo_acceso|date:"d/m/Y H:i" }}</span></div>
+                <div class="info-item"><span class="info-label">Primer Acceso</span><span class="info-value">{{ dispositivo.primer_acceso|date:"d/m/Y H:i" }}</span></div>
+                <div class="info-item"><span class="info-label">Dirección IP</span><span class="info-value">{{ dispositivo.ip_address }}</span></div>
+            </div>
+
+            <div class="device-actions">
+                {% if dispositivo.es_confiable and not dispositivo.es_principal %}
+                    <button class="btn btn-danger" onclick="openModal({{ dispositivo.id }}, '{{ dispositivo.nombre_dispositivo|default:"Dispositivo desconocido" }}')">
+                        🚫 Revocar Confianza
+                    </button>
+                {% endif %}
+
+                {% if not dispositivo.es_confiable %}
+                    <button class="btn btn-secondary" onclick="openTrustModal({{ dispositivo.id }}, '{{ dispositivo.nombre_dispositivo|default:"Dispositivo desconocido" }}')">
+                        ✅ Confiar en este dispositivo
+                    </button>
+                {% endif %}
+
+                {% if not dispositivo.es_principal and not hay_principal %}
+                    <button class="btn" onclick="openPrincipalModal({{ dispositivo.id }}, '{{ dispositivo.nombre_dispositivo|default:"Dispositivo" }}')">
+                        ⭐ Marcar como Principal
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h3>No tienes dispositivos registrados</h3>
+            <p>Los dispositivos aparecerán aquí después de que inicies sesión desde ellos.</p>
+        </div>
+    {% endif %}
+
+    <div class="security-tips">
+        <h4>🛡️ Consejos de Seguridad</h4>
+        <ul>
+            <li>Revisa regularmente tus dispositivos confiables</li>
+            <li>Revoca el acceso de dispositivos que ya no uses</li>
+            <li>Si ves actividad sospechosa, cambia tu contraseña inmediatamente</li>
+            <li>Habilita la autenticación de dos factores para mayor seguridad</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Modales -->
+{% csrf_token %}
+
+<!-- Modal de Revocar -->
+<div id="revocarModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h3>Revocar Dispositivo</h3>
+        <p id="modal-text">¿Deseas revocar el acceso de este dispositivo?</p>
+        <form method="post" id="revocarForm">{% csrf_token %}
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-danger">Sí, revocar</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Confiar -->
+<div id="trustModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h3>Marcar como Confiable</h3>
+        <p id="trust-modal-text">¿Deseas confiar en este dispositivo?</p>
+        <form method="post" id="trustForm">{% csrf_token %}
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-secondary">Sí, confiar</button>
+                <button type="button" class="btn btn-danger" onclick="closeTrustModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Principal -->
+<div id="principalModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h3>Marcar como Principal</h3>
+        <p id="principal-modal-text">¿Deseas marcar este dispositivo como tu dispositivo principal?</p>
+        <form method="post" id="principalForm">{% csrf_token %}
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-secondary">Sí, marcar</button>
+                <button type="button" class="btn btn-danger" onclick="closePrincipalModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    function openModal(id, nombre) {
+        document.getElementById('modal-text').innerText = `¿Estás seguro de revocar la confianza del dispositivo: "${nombre}"?`;
+        document.getElementById('revocarForm').action = `/dispositivos/revocar/${id}/`;
+        document.getElementById('revocarModal').style.display = 'block';
+    }
+    function closeModal() {
+        document.getElementById('revocarModal').style.display = 'none';
+    }
+
+    function openTrustModal(id, nombre) {
+        document.getElementById('trust-modal-text').innerText = `¿Deseas marcar como confiable el dispositivo: "${nombre}"?`;
+        document.getElementById('trustForm').action = `/dispositivos/confiar/${id}/`;
+        document.getElementById('trustModal').style.display = 'block';
+    }
+    function closeTrustModal() {
+        document.getElementById('trustModal').style.display = 'none';
+    }
+
+    function openPrincipalModal(id, nombre) {
+        document.getElementById('principal-modal-text').innerText = `¿Deseas marcar "${nombre}" como tu dispositivo principal?`;
+        document.getElementById('principalForm').action = `/dispositivos/principal/${id}/`;
+        document.getElementById('principalModal').style.display = 'block';
+    }
+    function closePrincipalModal() {
+        document.getElementById('principalModal').style.display = 'none';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {
+            closeModal(); closeTrustModal(); closePrincipalModal();
+        }
+    });
+</script>
+
+</body>
+</html>

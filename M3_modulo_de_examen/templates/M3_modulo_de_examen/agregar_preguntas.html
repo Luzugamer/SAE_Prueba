@@ -1,0 +1,216 @@
+{% extends "Pages/base.html" %}
+{% block title %}Agregar Preguntas - {{ examen.titulo }}{% endblock %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'M3_modulo_de_examen/agregar_preguntas.css' %}">
+
+<div class="container mt-4">
+    <h1 class="mb-4">Agregar Preguntas - {{ examen.titulo }}</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Preguntas del Examen ({{ preguntas_examen.count }})</h5>
+        </div>
+        <div class="card-body">
+            {% if preguntas_examen %}
+            <ol class="list-group list-group-numbered">
+                {% for pregunta in preguntas_examen %}
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">{{ pregunta.pregunta.enunciado|truncatechars:100 }}</div>
+                        <small class="text-muted">
+                            {{ pregunta.pregunta.tipo_pregunta|capfirst }}{% if pregunta.pregunta.tema %} - {{ pregunta.pregunta.tema.nombre }}{% endif %}
+                            {% if pregunta.pregunta.tipo_pregunta == 'respuesta_corta' %}
+                                - Respuesta: "{{ pregunta.pregunta.respuesta_correcta }}"
+                            {% elif pregunta.pregunta.tipo_pregunta == 'verdadero_falso' %}
+                                - Respuesta: {{ pregunta.pregunta.respuesta_correcta }}
+                            {% endif %}
+                        </small>
+                    </div>
+                    <span class="badge bg-primary rounded-pill">#{{ pregunta.orden }}</span>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <div class="alert alert-info">No hay preguntas en este examen todavía.</div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>Agregar Nueva Pregunta</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" id="pregunta-form">
+                {% csrf_token %}
+                
+                <!-- Mostrar errores no relacionados con campos específicos -->
+                {% if pregunta_form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ pregunta_form.non_field_errors }}
+                    </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <label for="{{ pregunta_form.enunciado.id_for_label }}" class="form-label">Enunciado *</label>
+                    {{ pregunta_form.enunciado }}
+                    {% if pregunta_form.enunciado.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ pregunta_form.enunciado.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ pregunta_form.tipo_pregunta.id_for_label }}" class="form-label">Tipo de Pregunta *</label>
+                        {{ pregunta_form.tipo_pregunta }}
+                        {% if pregunta_form.tipo_pregunta.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ pregunta_form.tipo_pregunta.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ pregunta_form.tema.id_for_label }}" class="form-label">Tema (Opcional)</label>
+                        {{ pregunta_form.tema }}
+                        {% if pregunta_form.tema.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ pregunta_form.tema.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Campo de respuesta correcta (para verdadero/falso y respuesta corta) -->
+                <div class="mb-3" id="respuesta-correcta-container" style="display: none;">
+                    <label for="{{ pregunta_form.respuesta_correcta.id_for_label }}" class="form-label">Respuesta Correcta *</label>
+                    <div id="respuesta-verdadero-falso" style="display: none;">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="respuesta_vf" id="respuesta_verdadero" value="Verdadero">
+                            <label class="form-check-label" for="respuesta_verdadero">Verdadero</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="respuesta_vf" id="respuesta_falso" value="Falso">
+                            <label class="form-check-label" for="respuesta_falso">Falso</label>
+                        </div>
+                    </div>
+                    <div id="respuesta-corta" style="display: none;">
+                        {{ pregunta_form.respuesta_correcta }}
+                    </div>
+                    {% if pregunta_form.respuesta_correcta.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ pregunta_form.respuesta_correcta.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Opciones múltiples -->
+                <div id="opciones-container" style="display: none;">
+                    <h6>Opciones de Respuesta</h6>
+                    <small class="text-muted mb-3 d-block">Marque la casilla "Correcta" para la respuesta correcta</small>
+                    {{ opcion_formset.management_form }}
+                    
+                    {% for form in opcion_formset %}
+                    <div class="row mb-2 opcion-row">
+                        <div class="col-8">
+                            <input type="text" class="form-control" placeholder="Escriba una opción" 
+                                   name="{{ form.texto_opcion.name }}" id="{{ form.texto_opcion.id_for_label }}">
+                        </div>
+                        <div class="col-3 form-check form-switch pt-2">
+                            <input type="checkbox" class="form-check-input" 
+                                   name="{{ form.es_correcta.name }}" id="{{ form.es_correcta.id_for_label }}">
+                            <label class="form-check-label" for="{{ form.es_correcta.id_for_label }}">Correcta</label>
+                        </div>
+                        <div class="col-1">
+                            {% if form.id %}{{ form.id }}{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ pregunta_form.explicacion.id_for_label }}" class="form-label">Explicación (Opcional)</label>
+                    {{ pregunta_form.explicacion }}
+                    <small class="form-text text-muted">Explicación que se mostrará después de responder</small>
+                </div>
+                
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar Pregunta
+                    </button>
+                    <a href="{% url 'lista_examenes_curso' examen.curso.codigo %}" class="btn btn-secondary">
+                        Finalizar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoPreguntaSelect = document.getElementById('id_tipo_pregunta');
+    const opcionesContainer = document.getElementById('opciones-container');
+    const respuestaCorrectaContainer = document.getElementById('respuesta-correcta-container');
+    const respuestaVerdaderoFalso = document.getElementById('respuesta-verdadero-falso');
+    const respuestaCorta = document.getElementById('respuesta-corta');
+    const respuestaCorrectaInput = document.getElementById('{{ pregunta_form.respuesta_correcta.id_for_label }}');
+    
+    function toggleFields() {
+        const selectedType = tipoPreguntaSelect.value;
+        
+        // Ocultar todos los contenedores primero
+        opcionesContainer.style.display = 'none';
+        respuestaCorrectaContainer.style.display = 'none';
+        respuestaVerdaderoFalso.style.display = 'none';
+        respuestaCorta.style.display = 'none';
+        
+        switch(selectedType) {
+            case 'opcion_multiple':
+                opcionesContainer.style.display = 'block';
+                break;
+            case 'verdadero_falso':
+                respuestaCorrectaContainer.style.display = 'block';
+                respuestaVerdaderoFalso.style.display = 'block';
+                break;
+            case 'respuesta_corta':
+                respuestaCorrectaContainer.style.display = 'block';
+                respuestaCorta.style.display = 'block';
+                break;
+        }
+    }
+    
+    // Ejecutar al cargar la página
+    toggleFields();
+    
+    // Ejecutar cuando cambie la selección
+    tipoPreguntaSelect.addEventListener('change', toggleFields);
+    
+    // Manejar selección de verdadero/falso
+    document.querySelectorAll('input[name="respuesta_vf"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                respuestaCorrectaInput.value = this.value;
+            }
+        });
+    });
+    
+    // Validar que solo una opción esté marcada como correcta en opción múltiple
+    document.querySelectorAll('input[name*="es_correcta"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                // Desmarcar otras opciones
+                document.querySelectorAll('input[name*="es_correcta"]').forEach(function(otherCheckbox) {
+                    if (otherCheckbox !== checkbox) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

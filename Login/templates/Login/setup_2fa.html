@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar 2FA</title>
+    <link rel="stylesheet" href="{% static 'login/setup_2fa.css' %}">
+</head>
+<body>
+    <div class="setup-container">
+        <h2 class="setup-title">🔒 Configurar Autenticación de Dos Factores</h2>
+
+        <div class="step">
+            <h4>Paso 1: Instala una app de autenticación</h4>
+            <p>Necesitarás una aplicación de autenticación en tu teléfono:</p>
+            <div class="apps-list">
+                <div class="app-option">
+                    <strong>Google Authenticator</strong>
+                    <br><small>iOS / Android</small>
+                </div>
+                <div class="app-option">
+                    <strong>Microsoft Authenticator</strong>
+                    <br><small>iOS / Android</small>
+                </div>
+                <div class="app-option">
+                    <strong>Authy</strong>
+                    <br><small>iOS / Android</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <h4>Paso 2: Escanea el código QR</h4>
+            <div class="qr-container">
+                <img src="data:image/png;base64,{{ qr_code }}" alt="Código QR para 2FA" class="qr-image">
+                <p><strong>O ingresa este código manualmente:</strong></p>
+                <div class="secret-key">{{ secret_key }}</div>
+            </div>
+        </div>
+
+        <div class="step">
+            <h4>Paso 3: Ingresa el código de verificación</h4>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.otp_code.label_tag }}
+                    {{ form.otp_code }}
+                    {% if form.otp_code.errors %}
+                        <div class="error-message">
+                            {% for error in form.otp_code.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="login-button">Activar 2FA</button>
+            </form>
+        </div>
+
+        <div class="setup-warning">
+            <strong>⚠️ Importante:</strong>
+            <p>Guarda tu código secreto en un lugar seguro. Lo necesitarás si cambias de dispositivo.</p>
+        </div>
+
+        <div class="setup-cancel">
+            <a href="#" onclick="history.back()">← Cancelar</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('id_otp_code').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>

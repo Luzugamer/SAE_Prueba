@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Comunidades</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 50%, #E0F6FF 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Elementos decorativos flotantes */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-circle:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-circle:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-circle:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #2C5282;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #4A5568;
+            font-size: 1.1em;
+        }
+
+        .communities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .community-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .community-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .community-header {
+            background: linear-gradient(135deg, #4299E1, #3182CE);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .community-header:hover {
+            background: linear-gradient(135deg, #3182CE, #2B6CB0);
+        }
+
+        .community-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            overflow: hidden;
+        }
+
+        .community-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .community-info h3 {
+            font-size: 1.4em;
+            margin-bottom: 5px;
+        }
+
+        .community-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .community-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .community-content.expanded {
+            max-height: 1000px;
+        }
+
+        .content-section {
+            padding: 20px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .content-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2D3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .professor-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #F7FAFC;
+            border-radius: 10px;
+        }
+
+        .professor-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4299E1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .members-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: #F7FAFC;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .member-item:hover {
+            background: #EDF2F7;
+        }
+
+        .member-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #48BB78;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .member-avatar.inactive {
+            background: #A0AEC0;
+        }
+
+        .member-name {
+            font-weight: 500;
+            color: #2D3748;
+        }
+
+        .member-role {
+            font-size: 0.8em;
+            color: #718096;
+            margin-left: auto;
+        }
+
+        .progress-bar {
+            background: #E2E8F0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48BB78, #38A169);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background: #F7FAFC;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .btn-primary {
+            background: #4299E1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3182CE;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #F56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #E53E3E;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #ED8936;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #DD6B20;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state h2 {
+            color: #4A5568;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            color: #718096;
+            margin-bottom: 30px;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsividad */
+        @media (max-width: 768px) {
+            .communities-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .community-header {
+                padding: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ Mis Comunidades</h1>
+            <p>Gestiona y explora todas tus comunidades académicas</p>
+        </div>
+
+        {% if comunidades %}
+            <div class="communities-grid">
+                {% for comunidad in comunidades %}
+                <div class="community-card">
+                    <div class="community-header" onclick="toggleCommunity({{ comunidad.id }})">
+                        <div class="community-icon">
+                            {% if comunidad.icono %}
+                                <img src="{{ comunidad.icono.url }}" alt="{{ comunidad.nombre }}">
+                            {% else %}
+                                🏫
+                            {% endif %}
+                        </div>
+                        <div class="community-info">
+                            <h3>{{ comunidad.nombre }}</h3>
+                            <div class="community-stats">
+                                <div class="stat-item">
+                                    <span>⭐</span>
+                                    <span>{{ comunidad.puntos_prestigio }} pts</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>👥</span>
+                                    <span>{{ comunidad.get_miembros_activos.count }} miembros</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-left: auto; font-size: 24px;" class="pulse">
+                            ⬇️
+                        </div>
+                    </div>
+
+                    <div class="community-content" id="content-{{ comunidad.id }}">
+                        <!-- Información de prestigio -->
+                        <div class="content-section">
+                            <div class="section-title">
+                                <span>🏆</span>
+                                Prestigio y Progreso
+                            </div>
+                            <div>
+                                <p><strong>Puntos actuales:</strong> {{ comunidad.puntos_prestigio }}</p>
+                                <p><strong>Próximo hito:</strong> {% widthratio comunidad.puntos_prestigio 1000 100 %}% hacia 1000 pts</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: {% widthratio comunidad.puntos_prestigio 1000 100 %}%;">
+                                        {{ comunidad.puntos_prestigio }}/1000
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Profesor a cargo -->
+                        <div class="content-section">
+                            <div class="section-title">
+                                <span>👨‍🏫</span>
+                                Profesor a Cargo
+                            </div>
+                            <div class="professor-info">
+                                <div class="professor-avatar">
+                                    {{ comunidad.creador.first_name|first|default:comunidad.creador.username|first|upper }}
+                                </div>
+                                <div>
+                                    <div class="member-name">
+                                        {{ comunidad.creador.get_full_name|default:comunidad.creador.username }}
+                                    </div>
+                                    <div class="member-role">Creador de la comunidad</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Miembros activos -->
+                        <div class="content-section">
+                            <div class="section-title">
+                                <span>✅</span>
+                                Miembros Activos ({{ comunidad.get_miembros_activos.count }})
+                            </div>
+                            <div class="members-list">
+                                {% for miembro in comunidad.get_miembros_activos|slice:":5" %}
+                                <div class="member-item">
+                                    <div class="member-avatar">
+                                        {{ miembro.usuario.first_name|first|default:miembro.usuario.username|first|upper }}
+                                    </div>
+                                    <div class="member-name">
+                                        {{ miembro.usuario.get_full_name|default:miembro.usuario.username }}
+                                    </div>
+                                    <div class="member-role">{{ miembro.get_rol_display }}</div>
+                                </div>
+                                {% endfor %}
+                                {% if comunidad.get_miembros_activos.count > 5 %}
+                                <div class="member-item" style="justify-content: center; font-style: italic; color: #718096;">
+                                    Y {{ comunidad.get_miembros_activos.count|add:"-5" }} miembros más...
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Miembros inactivos -->
+                        {% if comunidad.get_miembros_inactivos.count > 0 %}
+                        <div class="content-section">
+                            <div class="section-title">
+                                <span>⏸️</span>
+                                Miembros Inactivos ({{ comunidad.get_miembros_inactivos.count }})
+                            </div>
+                            <div class="members-list">
+                                {% for miembro in comunidad.get_miembros_inactivos|slice:":3" %}
+                                <div class="member-item">
+                                    <div class="member-avatar inactive">
+                                        {{ miembro.usuario.first_name|first|default:miembro.usuario.username|first|upper }}
+                                    </div>
+                                    <div class="member-name">
+                                        {{ miembro.usuario.get_full_name|default:miembro.usuario.username }}
+                                    </div>
+                                    <div class="member-role">{{ miembro.get_rol_display }}</div>
+                                </div>
+                                {% endfor %}
+                                {% if comunidad.get_miembros_inactivos.count > 3 %}
+                                <div class="member-item" style="justify-content: center; font-style: italic; color: #718096;">
+                                    Y {{ comunidad.get_miembros_inactivos.count|add:"-3" }} miembros más...
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Botones de acción -->
+                        <div class="action-buttons">
+                            <a href="{% url 'comunidad:comunidad_detalle' comunidad.id %}" class="btn btn-primary">
+                                <span>👁️</span>
+                                Ver Comunidad
+                            </a>
+                            <a href="{% url 'comunidad:zona_descanso' comunidad.id %}" class="btn btn-primary">
+                                <span>☕</span>
+                                Zona Descanso
+                            </a>
+                            <a href="{% url 'comunidad:salir_comunidad' comunidad.id %}" class="btn btn-danger" 
+                               onclick="return confirm('¿Estás seguro de que quieres salir de esta comunidad?')">
+                                <span>🚪</span>
+                                Salir
+                            </a>
+                            <a href="{% url 'comunidad:reportar_comunidad' comunidad.id %}" class="btn btn-warning">
+                                <span>⚠️</span>
+                                Reportar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h2>🏫 ¡Aún no tienes comunidades!</h2>
+                <p>Explora y únete a comunidades académicas para comenzar tu experiencia educativa.</p>
+                <a href="{% url 'comunidad:inicio' %}" class="btn btn-primary">
+                    <span>🔍</span>
+                    Explorar Comunidades
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleCommunity(communityId) {
+            const content = document.getElementById(`content-${communityId}`);
+            const isExpanded = content.classList.contains('expanded');
+            
+            // Cerrar todas las demás comunidades
+            document.querySelectorAll('.community-content').forEach(el => {
+                el.classList.remove('expanded');
+            });
+            
+            // Abrir/cerrar la comunidad actual
+            if (!isExpanded) {
+                content.classList.add('expanded');
+                
+                // Animación suave de scroll
+                setTimeout(() => {
+                    content.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'nearest' 
+                    });
+                }, 100);
+            }
+        }
+
+        // Animaciones adicionales
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animar las tarjetas al cargar
+            const cards = document.querySelectorAll('.community-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>

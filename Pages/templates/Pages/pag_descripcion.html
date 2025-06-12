@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAE</title>
+    <link rel="stylesheet" href="{% static 'Pages/Pag_descripcion/pag_descripcion.css' %}">
+    <link rel="stylesheet" href="{% static 'Pages/Pag_descripcion/botones.css' %}">
+</head>
+<body>
+    <div class="auth-buttons-container" id="authButtonsContainer">
+        <div class="auth-buttons-wrapper">
+            <a href="{% url 'registro' %}" class="auth-btn register-btn" data-action="register">
+                <span class="btn-icon">👤</span>
+                <span class="btn-text">Registrarse</span>
+                <div class="btn-glow"></div>
+            </a>
+            
+            <a href="{% url 'login' %}" class="auth-btn login-btn" data-action="login">
+                <span class="btn-icon">🔑</span>
+                <span class="btn-text">Iniciar Sesión</span>
+                <div class="btn-glow"></div>
+            </a>
+        </div>
+    </div>
+    <!-- Sección Hero -->
+    <section class="hero-section">
+        <div class="parallax-bg" style="background-image: url('{% static 'Pages/images/Baner_principal.jpg' %}');"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Banco de Apoyo Estudiantil</h1>
+            <p class="hero-subtitle">Tu puerta de entrada al conocimiento digital</p>
+        </div>
+    </section>
+
+    <!-- Sección de contenido principal -->
+    <section class="content-section">
+        <div class="content-wrapper">
+            <h2 class="content-title fade-in-up">¿Qúe ofrecemos?</h2>
+            
+            <div class="content-grid">
+                <div class="content-card" data-row="1">
+                    <h3>Educación</h3>
+                    <p>Contenido educativo de alta calidad para potenciar tu aprendizaje y desarrollo profesional.</p>
+                </div>
+                
+                <div class="content-card" data-row="1">
+                    <h3>Recursos</h3>
+                    <p>Herramientas y recursos digitales para optimizar tu productividad y alcanzar tus objetivos.</p>
+                </div>
+
+                <div class="content-card" data-row="2">
+                    <h3>Comunidad</h3>
+                    <p>Conéctate con una comunidad activa de personas que comparten tus intereses y pasiones.</p>
+                </div>
+                
+                <div class="content-card" data-row="2">
+                    <h3>Innovación</h3>
+                    <p>Mantente al día con las últimas tendencias y desarrollos en tecnología y conocimiento.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Qué Hacemos -->
+    <section class="seccion-background section">
+        <h2 class="section-title fade-in-up">¿Qué Hacemos?</h2>
+        <p class="section-description fade-in-up">Somos una plataforma digital dedicada a democratizar el acceso al conocimiento y facilitar el aprendizaje continuo. Nuestro sitio web está diseñado para ser tu compañero ideal en el viaje hacia el crecimiento personal y profesional, ofreciendo contenido de calidad, herramientas útiles y una comunidad vibrante donde puedes aprender, compartir y crecer junto a otros.</p>
+    </section>
+
+    <!-- Sección Qué Encontrarás -->
+    <section class="what-you-find section">
+        <h2 class="section-title fade-in-up">¿Qué Encontrarás Aquí?</h2>
+        <p class="section-description fade-in-up">Explora nuestra amplia gama de contenidos y servicios diseñados especialmente para ti</p>
+        
+        <div class="features-grid">
+            <div class="feature-item fade-in-up">
+                <div class="feature-icon">📚</div>
+                <h4>Cursos y Tutoriales</h4>
+                <p>Aprende nuevas habilidades con nuestros cursos estructurados y tutoriales paso a paso.</p>
+            </div>
+            
+            <div class="feature-item fade-in-up">
+                <div class="feature-icon">🛠️</div>
+                <h4>Herramientas Útiles</h4>
+                <p>Accede a calculadoras, generadores y otras herramientas que facilitan tu trabajo diario.</p>
+            </div>
+            
+            <div class="feature-item fade-in-up">
+                <div class="feature-icon">📝</div>
+                <h4>Artículos y Guías</h4>
+                <p>Lee contenido actualizado sobre tendencias, consejos y mejores prácticas en tu área de interés.</p>
+            </div>
+            
+            <div class="feature-item fade-in-up">
+                <div class="feature-icon">🎯</div>
+                <h4>Recursos Especializados</h4>
+                <p>Encuentra materiales específicos para tu industria o campo de especialización.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Para Qué Hacemos Esto -->
+    <section class="seccion-background section">
+        <h2 class="section-title fade-in-up">¿Para Qué Hacemos Esto?</h2>
+        <p class="section-description fade-in-up">Nuestra misión es crear un mundo donde el aprendizaje sea accesible para todos. Creemos firmemente que el conocimiento es el motor del progreso individual y colectivo. Por eso, trabajamos incansablemente para derribar las barreras que separan a las personas de la educación de calidad, proporcionando un espacio donde cada individuo puede desarrollar su potencial máximo y contribuir positivamente a la sociedad.</p>
+    </section>
+
+    <!-- Sección Beneficios -->
+    <section class="benefits section">
+        <h2 class="section-title fade-in-up">Beneficios de Unirte a Nosotros</h2>
+        <p class="section-description fade-in-up">Descubre las ventajas que obtienes al ser parte de nuestra comunidad</p>
+        
+        <div class="benefits-grid">
+            <div class="benefit-card fade-in-up">
+                <h4>🚀 Crecimiento Acelerado</h4>
+                <p>Acelera tu desarrollo profesional con contenido curado y metodologías probadas que te ayudarán a alcanzar tus metas más rápido.</p>
+            </div>
+            
+            <div class="benefit-card fade-in-up">
+                <h4>🌐 Acceso 24/7</h4>
+                <p>Aprende a tu ritmo desde cualquier lugar y en cualquier momento. Nuestro contenido está disponible las 24 horas del día.</p>
+            </div>
+            
+            <div class="benefit-card fade-in-up">
+                <h4>💡 Contenido Actualizado</h4>
+                <p>Mantente al día con información fresca y relevante. Actualizamos constantemente nuestro contenido para reflejar las últimas tendencias.</p>
+            </div>
+            
+            <div class="benefit-card fade-in-up">
+                <h4>🤝 Comunidad Activa</h4>
+                <p>Conéctate con profesionales y entusiastas de tu área. Comparte experiencias, haz networking y colabora en proyectos.</p>
+            </div>
+            
+            <div class="benefit-card fade-in-up">
+                <h4>🎯 Personalización</h4>
+                <p>Recibe recomendaciones personalizadas basadas en tus intereses y objetivos de aprendizaje.</p>
+            </div>
+            
+            <div class="benefit-card fade-in-up">
+                <h4>📈 Resultados Medibles</h4>
+                <p>Rastrea tu progreso con métricas claras y certificaciones que validan tu aprendizaje y mejoran tu perfil profesional.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-intro">
+                Conecta con nosotros en nuestras redes sociales y mantente al día con las últimas novedades, tips y contenido exclusivo. ¡Síguenos y sé parte de nuestra comunidad!
+            </p>
+            
+            <div class="footer-main">
+                <div class="social-column">
+                    <h4>Redes Sociales</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📘 Facebook</a>
+                        <a href="#" class="social-link">📸 Instagram</a>
+                        <a href="#" class="social-link">📱 TikTok</a>
+                    </div>
+                </div>
+                
+                <div class="social-column">
+                    <h4>Comunicación</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link">✈️ Telegram</a>
+                        <a href="#" class="social-link">📺 YouTube</a>
+                        <a href="#" class="social-link">📧 Gmail</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-info">
+                <div class="phone-number">📞 +51 123 456 789</div>
+                <div class="copyright">© 2025 Mi Sitio Web. Todos los derechos reservados.</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'Pages/Pag_descripcion/pag_descripcion.js' %}"></script>
+    <script src="{% static 'Pages/Pag_descripcion/botones.js' %}"></script>
+</body>
+</html>

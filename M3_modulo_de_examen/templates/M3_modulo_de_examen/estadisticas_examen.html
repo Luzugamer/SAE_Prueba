@@ -1,0 +1,87 @@
+{% extends "Pages/base.html" %}
+{% block title %}Estadísticas - {{ examen.titulo }}{% endblock %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'M3_modulo_de_examen/estadisticas_examen.css' %}">
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h2 class="mb-0">Estadísticas del Examen</h2>
+        </div>
+        <div class="card-body">
+            <h3>{{ examen.titulo }}</h3>
+            <p class="text-muted">{{ examen.descripcion }}</p>
+            
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary mb-3">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Promedio</h5>
+                            <p class="card-text display-4">{{ promedio|floatformat:1 }}%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-success mb-3">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Intentos</h5>
+                            <p class="card-text display-4">{{ intentos }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-warning mb-3">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Mejor Puntaje</h5>
+                            <p class="card-text display-4">{{ resultados.0.puntaje|floatformat:1 }}%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 class="mt-4 mb-3">Resultados Individuales</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Estudiante</th>
+                            <th>Puntaje</th>
+                            <th>Fecha</th>
+                            <th>Tiempo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resultado in resultados %}
+                        <tr>
+                            <td>{{ resultado.usuario.nombre }} {{ resultado.usuario.apellido }}</td>
+                            <td>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar {% if resultado.puntaje >= 70 %}bg-success{% else %}bg-danger{% endif %}" 
+                                         role="progressbar" style="width: {{ resultado.puntaje }}%" 
+                                         aria-valuenow="{{ resultado.puntaje }}" aria-valuemin="0" aria-valuemax="100">
+                                        {{ resultado.puntaje|floatformat:1 }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ resultado.fecha_realizacion|date:"d/m/Y H:i" }}</td>
+                            <td>{{ resultado.tiempo_empleado }} seg</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'agregar_preguntas' examen.id %}" class="btn btn-outline-primary">
+                    <i class="fas fa-question-circle"></i> Administrar Preguntas
+                </a>
+                <a href="{% url 'lista_examenes_curso' examen.curso.codigo %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

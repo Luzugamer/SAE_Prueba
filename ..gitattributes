@@ -1,0 +1,18 @@
+# Auto detectar archivos de texto y realizar normalización LF
+* text=auto
+
+# Declarar explícitamente archivos de texto que siempre quieres normalizar
+*.css text
+*.js text
+*.html text
+*.py text
+
+# Declarar archivos que siempre tendrán finales CRLF al hacer checkout
+*.bat text eol=crlf
+
+# Marcar archivos que son verdaderamente binarios y no deben modificarse
+*.png binary
+*.jpg binary
+*.jpeg binary
+
+*.pdf2image

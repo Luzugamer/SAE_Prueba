@@ -1,0 +1,74 @@
+{% extends "Pages/base.html" %}
+{% block title %}Resultado - {{ examen.titulo }}{% endblock %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'M3_modulo_de_examen/resultado_examen.css' %}">
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Resultado del Examen</h2>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h3>{{ examen.titulo }}</h3>
+                    <p class="text-muted">{{ examen.descripcion }}</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="display-4 fw-bold {% if resultado.puntaje >= 70 %}text-success{% else %}text-danger{% endif %}">
+                        {{ resultado.puntaje|floatformat:1 }}%
+                    </div>
+                    <p>Tiempo empleado: {{ resultado.tiempo_empleado }} segundos</p>
+                </div>
+            </div>
+            
+            <div class="progress mb-4" style="height: 20px;">
+                <div class="progress-bar {% if resultado.puntaje >= 70 %}bg-success{% else %}bg-danger{% endif %}" 
+                     role="progressbar" style="width: {{ resultado.puntaje }}%" 
+                     aria-valuenow="{{ resultado.puntaje }}" aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
+            
+            <h4 class="mb-3">Detalle de Respuestas</h4>
+            <div class="accordion" id="respuestasAccordion">
+                {% for respuesta in respuestas %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                        <button class="accordion-button {% if not respuesta.correcta %}bg-danger text-white{% endif %}" 
+                                type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#collapse{{ forloop.counter }}" 
+                                aria-expanded="true" aria-controls="collapse{{ forloop.counter }}">
+                            Pregunta {{ forloop.counter }}: 
+                            <span class="ms-2">{% if respuesta.correcta %}✅ Correcta{% else %}❌ Incorrecta{% endif %}</span>
+                        </button>
+                    </h2>
+                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" 
+                         aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#respuestasAccordion">
+                        <div class="accordion-body">
+                            <p><strong>Enunciado:</strong> {{ respuesta.examen_pregunta.pregunta.enunciado }}</p>
+                            <p><strong>Tu respuesta:</strong> {{ respuesta.respuesta }}</p>
+                            {% if respuesta.examen_pregunta.pregunta.respuesta_correcta %}
+                            <p><strong>Respuesta correcta:</strong> {{ respuesta.examen_pregunta.pregunta.respuesta_correcta }}</p>
+                            {% endif %}
+                            {% if respuesta.examen_pregunta.pregunta.explicacion %}
+                            <div class="alert alert-info mt-3">
+                                <strong>Explicación:</strong> {{ respuesta.examen_pregunta.pregunta.explicacion }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="mt-4 text-center">
+                <a href="{% url 'lista_examenes_curso' examen.curso.codigo %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Volver a los exámenes
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Comunidades</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 50%, #E0F6FF 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Elementos decorativos flotantes */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 15%;
+            left: 8%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 25%;
+            right: 10%;
+            animation-delay: 3s;
+            border-radius: 30%;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            bottom: 25%;
+            left: 15%;
+            animation-delay: 6s;
+        }
+
+        .floating-shape:nth-child(4) {
+            width: 60px;
+            height: 60px;
+            top: 60%;
+            right: 25%;
+            animation-delay: 2s;
+            border-radius: 20%;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+            33% { transform: translateY(-15px) rotate(120deg) scale(1.1); }
+            66% { transform: translateY(10px) rotate(240deg) scale(0.9); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(15px);
+        }
+
+        .header h1 {
+            color: #2C5282;
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #4299E1, #3182CE);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #4A5568;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        /* Barra de búsqueda mejorada */
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-form {
+            display: flex;
+            background: white;
+            border-radius: 50px;
+            padding: 8px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-form:focus-within {
+            box-shadow: 0 12px 40px rgba(66, 153, 225, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            outline: none;
+            background: transparent;
+            color: #2D3748;
+        }
+
+        .search-input::placeholder {
+            color: #A0AEC0;
+        }
+
+        .search-button {
+            background: linear-gradient(135deg, #4299E1, #3182CE);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1em;
+        }
+
+        .search-button:hover {
+            background: linear-gradient(135deg, #3182CE, #2B6CB0);
+            transform: scale(1.05);
+        }
+
+        .search-stats {
+            text-align: center;
+            margin: 30px 0;
+            color: #4A5568;
+            font-size: 1.1em;
+        }
+
+        /* Filtros rápidos */
+        .quick-filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #4A5568;
+        }
+
+        .filter-tag:hover, .filter-tag.active {
+            background: linear-gradient(135deg, #4299E1, #3182CE);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 153, 225, 0.4);
+        }
+
+        /* Grid de resultados */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .community-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            border: 3px solid transparent;
+        }
+
+        .community-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-color: #4299E1;
+        }
+
+        .community-card.featured {
+            border-color: #F6AD55;
+            position: relative;
+        }
+
+        .community-card.featured::before {
+            content: "⭐ DESTACADA";
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #F6AD55, #ED8936);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            z-index: 2;
+            animation: pulse 2s infinite;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #4299E1, #3182CE);
+            color: white;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+
+        .community-card:hover .card-header::before {
+            transform: rotate(45deg) translate(20px, 20px);
+        }
+
+        .card-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .community-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .community-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .community-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .community-institution {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .community-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9em;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .community-description {
+            color: #4A5568;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .community-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #718096;
+        }
+
+        .join-button {
+            width: 100%;
+            background: linear-gradient(135deg, #48BB78, #38A169);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .join-button:hover {
+            background: linear-gradient(135deg, #38A169, #2F855A);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .join-button:active {
+            transform: translateY(0);
+        }
+
+        /* Estados especiales */
+        .no-results {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+        }
+
+        .no-results h2 {
+            color: #4A5568;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .no-results p {
+            color: #718096;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .loading-state {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #4A5568;
+            font-size: 1.1em;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #E2E8F0;
+            border-left: 4px solid #4299E1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Animaciones de entrada */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsividad */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .search-form {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+                border-radius: 20px;
+            }
+            
+            .search-input, .search-button {
+                border-radius: 15px;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .quick-filters {
+                justify-content: center;
+            }
+            
+            .filter-tag {
+                font-size: 0.9em;
+                padding: 8px 16px;
+            }
+        }
+
+        /* Efectos especiales */
+        .sparkle {
+            position: relative;
+            overflow: visible;
+        }
+
+        .sparkle::after {
+            content: '✨';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 20px;
+            animation: sparkle 3s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Explorar Comunidades</h1>
+            <p>Descubre comunidades académicas increíbles y únete a la conversación</p>
+            
+            <div class="search-container">
+                <form method="GET" class="search-form" id="searchForm">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        class="search-input" 
+                        placeholder="¿Qué comunidad estás buscando?"
+                        value="{{ query }}"
+                        id="searchInput"
+                    >
+                    <button type="submit" class="search-button">
+                        <span>🚀</span>
+                        Buscar
+                    </button>
+                </form>
+            </div>
+
+        <!-- Estadísticas de búsqueda -->
+        {% if query %}
+        <div class="search-stats">
+            {% if resultados %}
+                🎯 Encontramos <strong>{{ resultados|length }}</strong> comunidad{{ resultados|length|pluralize:"es" }} 
+                para "<strong>{{ query }}</strong>"
+            {% else %}
+                😔 No encontramos resultados para "<strong>{{ query }}</strong>"
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Estado de carga -->
+        <div class="loading-state" id="loadingState">
+            <div class="loading-spinner"></div>
+            <p>Buscando las mejores comunidades para ti...</p>
+        </div>
+
+        <!-- Resultados -->
+        {% if resultados %}
+        <div class="results-grid" id="resultsGrid">
+            {% for comunidad in resultados %}
+            <div class="community-card fade-in {% if comunidad.es_destacada %}featured sparkle{% endif %}" 
+                 style="animation-delay: {{ forloop.counter0|floatformat:1 }}00ms;">
+                
+                <div class="card-header">
+                    <div class="card-header-content">
+                        <div class="community-icon">
+                            {% if comunidad.icono %}
+                                <img src="{{ comunidad.icono.url }}" alt="{{ comunidad.nombre }}">
+                            {% else %}
+                                🏛️
+                            {% endif %}
+                        </div>
+                        <h3 class="community-title">{{ comunidad.nombre }}</h3>
+                        {% if comunidad.institucion_afiliada %}
+                        <div class="community-institution">
+                            🏫 {{ comunidad.institucion_afiliada }}
+                        </div>
+                        {% endif %}
+                        <div class="community-stats">
+                            <div class="stat-item">
+                                <span>⭐</span>
+                                <span>{{ comunidad.puntos_prestigio }} pts</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>👥</span>
+                                <span>{{ comunidad.miembros.count }} miembros</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>📅</span>
+                                <span>{{ comunidad.fecha_creacion|date:"M Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <p class="community-description">
+                        {{ comunidad.descripcion|default:"Una comunidad increíble esperando por ti. ¡Únete y descubre todo lo que tiene para ofrecer!" }}
+                    </p>
+                    
+                    <div class="community-meta">
+                        <span>👨‍🏫 Por {{ comunidad.creador.get_full_name|default:comunidad.creador.username }}</span>
+                        <span>🕒 {{ comunidad.fecha_creacion|timesince }} atrás</span>
+                    </div>
+
+                    <!-- Verificar si ya es miembro -->
+                    {% if user in comunidad.miembros.all %}
+                        <a href="{% url 'comunidad:comunidad_detalle' comunidad.id %}" class="join-button" style="background: linear-gradient(135deg, #4299E1, #3182CE);">
+                            <span>👁️</span>
+                            Ya eres miembro - Ver comunidad
+                        </a>
+                    {% else %}
+                        <form method="POST" action="{% url 'comunidad:unirse_comunidad' comunidad.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="join-button" onclick="joinCommunity(this, '{{ comunidad.nombre }}')">
+                                <span>🚀</span>
+                                Unirse a {{ comunidad.nombre }}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% elif query %}
+        <!-- No hay resultados -->
+        <div class="no-results">
+            <h2>🔍 ¡Ups! No encontramos nada</h2>
+            <p>No encontramos comunidades que coincidan con "<strong>{{ query }}</strong>"</p>
+            <p>💡 <strong>Sugerencias:</strong></p>
+            <ul style="text-align: left; display: inline-block; margin: 20px 0;">
+                <li>Verifica la ortografía de tu búsqueda</li>
+                <li>Intenta con términos más generales</li>
+                <li>Usa palabras clave relacionadas</li>
+                <li>Explora nuestras categorías populares arriba</li>
+            </ul>
+            <div style="margin-top: 30px;">
+                <button onclick="clearSearch()" class="join-button" style="max-width: 300px; margin: 0 auto;">
+                    <span>🏠</span>
+                    Ver todas las comunidades
+                </button>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Estado inicial -->
+        <div class="no-results">
+            <h2>🌟 ¡Bienvenido al explorador!</h2>
+            <p>Usa la barra de búsqueda arriba o explora nuestras categorías populares</p>
+            <p>Encuentra la comunidad perfecta para tu aprendizaje</p>
+            <a href="{% url 'comunidad:inicio' %}" class="join-button" style="max-width: 300px; margin: 30px auto 0;">
+                <span>🏠</span>
+                Ver comunidades destacadas
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Búsqueda rápida
+        function quickSearch(term) {
+            document.getElementById('searchInput').value = term;
+            document.getElementById('searchForm').submit();
+        }
+
+        // Limpiar búsqueda
+        function clearSearch() {
+            window.location.href = "{% url 'comunidad:buscar_comunidades' %}";
+        }
+
+        // Animación al unirse a comunidad
+        function joinCommunity(button, communityName) {
+            button.innerHTML = '<span>⏳</span> Uniéndose...';
+            button.style.background = 'linear-gradient(135deg, #ED8936, #DD6B20)';
+            
+            setTimeout(() => {
+                button.innerHTML = '<span>✅</span> ¡Te has unido!';
+                button.style.background = 'linear-gradient(135deg, #48BB78, #38A169)';
+            }, 1000);
+        }
+
+        // Mostrar loading al buscar
+        document.getElementById('searchForm').addEventListener('submit', function() {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('resultsGrid').style.opacity = '0.5';
+        });
+
+        // Animaciones de entrada
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.community-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 100}ms`;
+            });
+
+            // Filtros activos
+            const filters = document.querySelectorAll('.filter-tag');
+            filters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    filters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+
+        // Búsqueda en tiempo real (opcional)
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length > 2) {
+                searchTimeout = setTimeout(() => {
+                    // Aquí podrías implementar búsqueda AJAX en tiempo real
+                    console.log('Búsqueda en tiempo real:', query);
+                }, 500);
+            }
+        });
+
+        // Efectos de teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && e.target.tagName !== 'INPUT') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+    </script>
+</body>
+</html>

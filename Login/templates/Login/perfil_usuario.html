@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Perfil</title>
+    <link rel="stylesheet" href="{% static 'login/perfil_usuario.css' %}">
+</head>
+<body>
+<div class="perfil-card">
+    <h2 class="perfil-title">👤 Perfil de Usuario</h2>
+
+    <div class="perfil-info">
+        <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
+        <p><strong>Apellido:</strong> {{ usuario.apellido }}</p>
+        <p><strong>Correo electrónico:</strong> {{ usuario.correo_electronico }}</p>
+        <p><strong>2FA Activado:</strong> {{ usuario.is_two_factor_enabled|yesno:"Sí,No" }}</p>
+    </div>
+
+    <div class="perfil-actions">
+        <a href="{% url 'dispositivos' %}">🔐 Ver Dispositivos</a>
+
+        {% if usuario.is_two_factor_enabled %}
+            <form action="{% url 'disable_2fa' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn-danger">🚫 Desactivar 2FA</button>
+            </form>
+        {% else %}
+            <a href="{% url 'setup_2fa' %}">🔑 Activar 2FA</a>
+        {% endif %}
+
+        <button class="btn-danger" onclick="openDeleteModal()">🗑️ Eliminar Cuenta</button>
+    </div>
+
+    <a href="{% url 'principal' %}" class="volver-link">← Volver</a>
+</div>
+<!-- Modal de Eliminación de Cuenta -->
+<div id="deleteModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h3>Eliminar Cuenta</h3>
+        <p>¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.</p>
+        <form method="post" action="{% url 'eliminar_cuenta' %}">
+            {% csrf_token %}
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") closeDeleteModal();
+    });
+</script>
+
+</body>
+</html>

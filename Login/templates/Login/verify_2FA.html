@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación 2FA</title>
+    <link rel="stylesheet" href="{% static 'login/login.css' %}">
+    <style>
+        .otp-input {
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 10px;
+            padding: 15px;
+            width: 200px;
+            margin: 10px auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            display: block;
+        }
+        .trust-device {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .security-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2 class="login-title">Verificación de Seguridad</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">
+            Ingresa el código de 6 dígitos de tu aplicación de autenticación
+        </p>
+        
+        <div class="security-note">
+            <strong>👤 {{ user.nombre }} {{ user.apellido }}</strong><br>
+            <small>{{ user.correo_electronico }}</small>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                {{ otp_form.otp_code.label_tag }}
+                {{ otp_form.otp_code }}
+                {% if otp_form.otp_code.errors %}
+                    <div class="error-message">
+                        {% for error in otp_form.otp_code.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="trust-device">
+                {{ trust_form.marcar_confiable }}
+                <label for="{{ trust_form.marcar_confiable.id_for_label }}" style="margin-left: 8px;">
+                    {{ trust_form.marcar_confiable.label }}
+                </label>
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                    Al marcar esta opción, no se requerirá 2FA en este dispositivo durante 30 días
+                </p>
+            </div>
+            
+            <button type="submit" class="login-button">Verificar</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'login' %}" style="color: #666; text-decoration: none;">
+                ← Volver al inicio de sesión
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Auto-enviar cuando se completen 6 dígitos
+        document.getElementById('id_otp_code').addEventListener('input', function(e) {
+            if (e.target.value.length === 6) {
+                // Opcional: auto-enviar el formulario
+                // e.target.form.submit();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+{% extends "Pages/base.html" %}
+{% block title %}Página Principal{% endblock %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'Pages/Pag_principal/principal.css' %}">
+
+<div class="main-container">
+    <div class="cards-section">
+        <h1 class="section-title">Materias Disponibles</h1>
+        <div class="carousel-wrapper">
+
+            <button class="nav-button left" id="prevBtn">
+                <i class="arrow-icon">‹</i>
+            </button>
+
+            <div class="carousel" id="carousel">
+                <div class="cards-container" id="cardsContainer">
+
+                    <div class="card" data-subject="fisica" onclick="window.location.href='{% url 'lista_examenes_curso' 'fisica' %}'">
+                        <div class="card-icon">
+                            <div class="icon physics-icon">⚛</div>
+                        </div>
+                        <h3 class="card-title">Física</h3>
+                        <p class="card-subtitle">6 | todo</p>
+                    </div>
+
+                    <div class="card" data-subject="geometria" onclick="window.location.href='{% url 'lista_examenes_curso' 'geometria' %}'">
+                        <div class="card-icon">
+                            <div class="icon geometry-icon">📐</div>
+                        </div>
+                        <h3 class="card-title">Geometría</h3>
+                        <p class="card-subtitle">5 | todo</p>
+                    </div>
+
+                    <div class="card" data-subject="algebra" onclick="window.location.href='{% url 'lista_examenes_curso' 'algebra' %}'">
+                        <div class="card-icon">
+                            <div class="icon algebra-icon">💬</div>
+                        </div>
+                        <h3 class="card-title">Álgebra</h3>
+                        <p class="card-subtitle">8 | todo</p>
+                    </div>
+
+                    <div class="card" data-subject="quimica" onclick="window.location.href='{% url 'lista_examenes_curso' 'quimica' %}'">
+                        <div class="card-icon">
+                            <div class="icon chemistry-icon">⚗</div>
+                        </div>
+                        <h3 class="card-title">Química</h3>
+                        <p class="card-subtitle">6 | todo</p>
+                    </div>
+
+                    <div class="card" data-subject="biologia" onclick="window.location.href='{% url 'lista_examenes_curso' 'biologia' %}'">
+                        <div class="card-icon">
+                            <div class="icon biology-icon">🧬</div>
+                        </div>
+                        <h3 class="card-title">Biología</h3>
+                        <p class="card-subtitle">7 | todo</p>
+                    </div>
+
+                    <div class="card" data-subject="historia">
+                        <div class="card-icon">
+                            <div class="icon history-icon">📚</div>
+                        </div>
+                        <h3 class="card-title">Historia</h3>
+                        <p class="card-subtitle">4 | todo</p>
+                    </div>
+
+                    <div class="card" data-subject="literatura">
+                        <div class="card-icon">
+                            <div class="icon literature-icon">✍️</div>
+                        </div>
+                        <h3 class="card-title">Literatura</h3>
+                        <p class="card-subtitle">9 | todo</p>
+                    </div>
+
+                    <div class="card" data-subject="geografia">
+                        <div class="card-icon">
+                            <div class="icon geography-icon">🌍</div>
+                        </div>
+                        <h3 class="card-title">Geografía</h3>
+                        <p class="card-subtitle">3 | todo</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="nav-button right" id="nextBtn">
+                <i class="arrow-icon">›</i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'Pages/Pag_principal/principal.js' %}"></script>
+{% endblock %}

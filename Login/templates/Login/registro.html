@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro</title>
+  <link rel="stylesheet" href="{% static 'Login/registro.css' %}">
+</head>
+<body>
+
+  <!-- Botón para volver -->
+  <div class="back-button" onclick="window.history.back()">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    Volver
+  </div>
+
+  <div class="register-card">
+    <h2 class="register-title">Registro de Usuario</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <div class="form-columns">
+        <div class="form-column">
+          <div class="form-group">
+          <label for="id_nombre">Nombre</label>
+          {{ form.nombre }}
+          </div>
+
+          <div class="form-group">
+          <label for="id_correo_electronico">Correo Electrónico</label>
+          {{ form.correo_electronico }}
+          </div>
+
+          <div class="form-group">
+          <label for="id_password_confirm">Confirmar Contraseña</label>
+          {{ form.password_confirm }}
+          </div>            
+
+        </div>
+
+        <div class="form-column">
+          <div class="form-group">
+          <label for="id_apellido">Apellido</label>
+          {{ form.apellido }}
+          </div>
+          
+          <div class="form-group">
+          <label for="id_password">Contraseña</label>
+          {{ form.password }}
+          </div>
+
+        </div>
+        </div>
+
+      <button type="submit" class="register-button">Registrar</button>
+
+      {% if form.errors %}
+        <div class="error-container">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </form>
+  </div>
+</body>
+</html>
