@@ -168,8 +168,23 @@ LOGGING = {
     },
 }
 
-import dj_database_url
 import os
+import dj_database_url
 
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+if os.environ.get("DATABASE_URL"):
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'SAE - copia',
+            'USER': 'postgres',
+            'PASSWORD': '897512',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
+
+
