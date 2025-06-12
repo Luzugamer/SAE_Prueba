@@ -15,4 +15,5 @@
 *.jpg binary
 *.jpeg binary
 
-*.pdf2image
+.env export-ignore
+venv/ export-ignore
