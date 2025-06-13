@@ -89,3 +89,14 @@ class DispositivoConfiableForm(forms.Form):
         widget=forms.CheckboxInput(attrs={'class': 'trust-device-checkbox'}),
         label="Confiar en este dispositivo por 30 días"
     )
+    
+class CambiarPasswordForm(forms.Form):
+    password_actual = forms.CharField(label="Contraseña Actual", widget=forms.PasswordInput)
+    nueva_password = forms.CharField(label="Nueva Contraseña", widget=forms.PasswordInput)
+    confirmar_nueva_password = forms.CharField(label="Confirmar Nueva Contraseña", widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("nueva_password") != cleaned.get("confirmar_nueva_password"):
+            raise forms.ValidationError("Las contraseñas nuevas no coinciden.")
+        return cleaned

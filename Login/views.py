@@ -12,9 +12,10 @@ import json
 from user_agents import parse
 from .utils import detectar_patron_login_sospechoso
 
-from .forms import UsuarioRegistroForm, UsuarioLoginForm, OTPVerificationForm, Setup2FAForm, DispositivoConfiableForm
+from .forms import UsuarioRegistroForm, UsuarioLoginForm, OTPVerificationForm, Setup2FAForm, DispositivoConfiableForm, CambiarPasswordForm
 from .models import UsuarioRol, Usuario, DispositivoUsuario, NotificacionSeguridad
 from .utils import get_client_ip, get_location_from_ip, enviar_notificacion_email
+from django.contrib.auth import update_session_auth_hash
 
 def get_device_fingerprint(request):
     """Genera un fingerprint único del dispositivo"""
@@ -191,7 +192,7 @@ def login_view(request):
                     enviar_alerta_actividad_sospechosa(user, motivo, dispositivo)
                 
                 # Si tiene 2FA habilitado y el dispositivo no es confiable
-                if user.is_two_factor_enabled and not dispositivo.es_confiable and user.ultima_sesion:
+                if user.is_two_factor_enabled and not dispositivo.es_confiable:
                     # Almacenar datos en sesión para la verificación 2FA
                     request.session['pre_2fa_user_id'] = user.id
                     request.session['pre_2fa_device_id'] = dispositivo.id
@@ -280,6 +281,23 @@ def complete_login(request, user, dispositivo):
     except UsuarioRol.DoesNotExist:
         messages.error(request, 'Usuario sin rol asignado. Contacte al administrador.')
         return redirect('login')
+
+@login_required
+def cerrar_sesion_dispositivo_view(request, dispositivo_id):
+    dispositivo = get_object_or_404(DispositivoUsuario, id=dispositivo_id, usuario=request.user)
+
+    if dispositivo.es_principal:
+        messages.error(request, "No puedes cerrar sesión del dispositivo principal.")
+        return redirect('dispositivos')
+
+    if request.method == 'POST':
+        dispositivo.activo = False
+        dispositivo.save()
+        messages.success(request, "Sesión cerrada correctamente para el dispositivo.")
+        return redirect('dispositivos')
+    
+    return redirect('dispositivos')
+
 
 @login_required
 def setup_2fa_view(request):
@@ -419,3 +437,22 @@ def marcar_principal_view(request, dispositivo_id):
         return redirect('dispositivos')
 
     return redirect('dispositivos')
+
+@login_required
+def cambiar_password_view(request):
+    if request.method == 'POST':
+        form = CambiarPasswordForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            if user.check_password(form.cleaned_data['password_actual']):
+                user.set_password(form.cleaned_data['nueva_password'])
+                user.save()
+                update_session_auth_hash(request, user)  # Para no cerrar sesión
+                messages.success(request, 'Contraseña cambiada correctamente.')
+                return redirect('perfil_usuario')
+            else:
+                form.add_error('password_actual', 'Contraseña actual incorrecta.')
+    else:
+        form = CambiarPasswordForm()
+
+    return render(request, 'Login/cambiar_password.html', {'form': form})

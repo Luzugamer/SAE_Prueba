@@ -75,6 +75,13 @@
                         ⭐ Marcar como Principal
                     </button>
                 {% endif %}
+
+                {% if not dispositivo.es_principal %}
+                    <button class="btn btn-warning" onclick="openCerrarSesionModal({{ dispositivo.id }}, '{{ dispositivo.nombre_dispositivo|default:"Dispositivo desconocido" }}')">
+                        🔐 Cerrar Sesión
+                    </button>
+                {% endif %}
+
             </div>
         </div>
         {% endfor %}
@@ -141,7 +148,34 @@
     </div>
 </div>
 
+<!-- Modal Cerrar Sesión -->
+<div id="cerrarSesionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>Cerrar Sesión del Dispositivo</h3>
+        <p id="cerrar-sesion-modal-text">¿Deseas cerrar la sesión de este dispositivo?</p>
+        <form method="post" id="cerrarSesionForm">
+            {% csrf_token %}
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-warning">Sí, cerrar sesión</button>
+                <button type="button" class="btn btn-secondary" onclick="closeCerrarSesionModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <!-- Scripts -->
+<script>
+    function openCerrarSesionModal(id, nombre) {
+        document.getElementById('cerrar-sesion-modal-text').innerText = `¿Deseas cerrar la sesión del dispositivo: "${nombre}"?`;
+        document.getElementById('cerrarSesionForm').action = `/dispositivos/cerrar_sesion/${id}/`;
+        document.getElementById('cerrarSesionModal').style.display = 'block';
+    }
+    function closeCerrarSesionModal() {
+        document.getElementById('cerrarSesionModal').style.display = 'none';
+    }
+</script>
+
 <script>
     function openModal(id, nombre) {
         document.getElementById('modal-text').innerText = `¿Estás seguro de revocar la confianza del dispositivo: "${nombre}"?`;
