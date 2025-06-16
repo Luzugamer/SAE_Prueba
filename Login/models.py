@@ -5,6 +5,7 @@ import qrcode
 from io import BytesIO
 import base64
 
+
 class UsuarioManager(BaseUserManager):
     def create_user(self, correo_electronico, nombre, apellido, password=None, **extra_fields):
         if not correo_electronico:
@@ -38,6 +39,7 @@ class UsuarioManager(BaseUserManager):
         UsuarioRol.objects.create(usuario=user, rol=rol_admin)
         
         return user
+
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     nombre = models.CharField(max_length=255)
@@ -101,6 +103,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         totp = pyotp.TOTP(self.otp_secret_key)
         return totp.verify(otp_code, valid_window=1)
 
+
 class Rol(models.Model):
     nombre_rol = models.CharField(max_length=255, unique=True)
     descripcion = models.TextField()
@@ -108,12 +111,14 @@ class Rol(models.Model):
     def __str__(self):
         return self.nombre_rol
 
+
 class UsuarioRol(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('usuario', 'rol')
+
 
 class DispositivoUsuario(models.Model):
     """Modelo para trackear dispositivos de usuarios"""
@@ -139,6 +144,7 @@ class DispositivoUsuario(models.Model):
     
     def __str__(self):
         return f"{self.usuario.correo_electronico} - {self.nombre_dispositivo or 'Dispositivo desconocido'}"
+
 
 class NotificacionSeguridad(models.Model):
     """Modelo para notificaciones de seguridad"""

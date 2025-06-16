@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def get_client_ip(request):
     """Obtiene la IP real del cliente considerando proxies"""
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -13,6 +14,7 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
 
 def get_location_from_ip(ip_address):
     """
@@ -45,6 +47,7 @@ def get_location_from_ip(ip_address):
         'region': 'Desconocida'
     }
 
+
 def enviar_notificacion_email(usuario, asunto, mensaje):
     """
     Envía una notificación por email al usuario
@@ -62,6 +65,7 @@ def enviar_notificacion_email(usuario, asunto, mensaje):
         logger.error(f"Error enviando email a {usuario.correo_electronico}: {e}")
         return False
 
+
 def generar_codigo_backup():
     """
     Genera códigos de backup para 2FA (opcional)
@@ -76,7 +80,6 @@ def generar_codigo_backup():
     
     return codes
 
-# Agregar al final de utils.py (completar la función que estaba cortada)
 
 def validar_fuerza_password(password):
     """
@@ -137,6 +140,7 @@ def validar_fuerza_password(password):
         'nivel': nivel,
         'feedback': feedback
     }
+
 
 def detectar_patron_login_sospechoso(usuario, ip_actual):
     """

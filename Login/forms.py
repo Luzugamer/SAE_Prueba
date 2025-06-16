@@ -2,9 +2,11 @@ from django import forms
 from .models import Usuario
 import re
 
+
 class UsuarioLoginForm(forms.Form):
     correo_electronico = forms.EmailField(label="Correo electrónico")
     password = forms.CharField(label="Contraseña", widget=forms.PasswordInput)
+
 
 class UsuarioRegistroForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -40,6 +42,7 @@ class UsuarioRegistroForm(forms.ModelForm):
 
         return cleaned_data
 
+
 class OTPVerificationForm(forms.Form):
     """Formulario para verificación de código OTP"""
     otp_code = forms.CharField(
@@ -60,6 +63,7 @@ class OTPVerificationForm(forms.Form):
         if not otp_code.isdigit():
             raise forms.ValidationError('El código debe contener solo números.')
         return otp_code
+
 
 class Setup2FAForm(forms.Form):
     """Formulario para configurar 2FA"""
@@ -82,6 +86,7 @@ class Setup2FAForm(forms.Form):
             raise forms.ValidationError('El código debe contener solo números.')
         return otp_code
 
+
 class DispositivoConfiableForm(forms.Form):
     """Formulario para marcar dispositivo como confiable"""
     marcar_confiable = forms.BooleanField(
@@ -90,6 +95,7 @@ class DispositivoConfiableForm(forms.Form):
         label="Confiar en este dispositivo por 30 días"
     )
     
+
 class CambiarPasswordForm(forms.Form):
     password_actual = forms.CharField(label="Contraseña Actual", widget=forms.PasswordInput)
     nueva_password = forms.CharField(label="Nueva Contraseña", widget=forms.PasswordInput)
