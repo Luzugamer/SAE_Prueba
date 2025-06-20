@@ -165,7 +165,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'your_app_name.utils': {
+        'Login.utils': {
             'handlers': ['file'],
             'level': 'INFO',
             'propagate': True,

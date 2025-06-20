@@ -40,36 +40,43 @@ def login_view(request):
             user = authenticate(request, correo_electronico=correo, password=password)
 
             if user is not None:
-                # Verificar dispositivo
-                dispositivo, es_nuevo = verificar_dispositivo(request, user)
-                
-                # Detectar patrones sospechosos
-                ip_actual = get_client_ip(request)
-                es_sospechoso, motivo = detectar_patron_login_sospechoso(user, ip_actual)
-                
-                if es_sospechoso:
-                    # Crear notificación de actividad sospechosa
-                    NotificacionSeguridad.objects.create(
-                        usuario=user,
-                        tipo='inicio_sesion_sospechoso',
-                        titulo='Actividad sospechosa detectada',
-                        mensaje=f'Se detectó actividad sospechosa: {motivo}',
-                        ip_origen=ip_actual,
-                        dispositivo=dispositivo
-                    )
+                try:
+                    # Verificar dispositivo
+                    dispositivo, es_nuevo = verificar_dispositivo(request, user)
                     
-                    # Enviar email de alerta
-                    enviar_alerta_actividad_sospechosa(user, motivo, dispositivo)
-                
-                # Si tiene 2FA habilitado y el dispositivo no es confiable
-                if user.is_two_factor_enabled and not dispositivo.es_confiable:
-                    # Almacenar datos en sesión para la verificación 2FA
-                    request.session['pre_2fa_user_id'] = user.id
-                    request.session['pre_2fa_device_id'] = dispositivo.id
-                    return redirect('verify_2fa')
-                
-                # Login directo si no tiene 2FA o dispositivo es confiable
-                return complete_login(request, user, dispositivo)
+                    # Detectar patrones sospechosos
+                    ip_actual = get_client_ip(request)
+                    es_sospechoso, motivo = detectar_patron_login_sospechoso(user, ip_actual)
+                    
+                    if es_sospechoso:
+                        # Crear notificación de actividad sospechosa
+                        NotificacionSeguridad.objects.create(
+                            usuario=user,
+                            tipo='inicio_sesion_sospechoso',
+                            titulo='Actividad sospechosa detectada',
+                            mensaje=f'Se detectó actividad sospechosa: {motivo}',
+                            ip_origen=ip_actual,
+                            dispositivo=dispositivo
+                        )
+                        
+                        # Enviar email de alerta
+                        enviar_alerta_actividad_sospechosa(user, motivo, dispositivo)
+                    
+                    # Si tiene 2FA habilitado y el dispositivo no es confiable
+                    if user.is_two_factor_enabled and not dispositivo.es_confiable:
+                        # Almacenar datos en sesión para la verificación 2FA
+                        request.session['pre_2fa_user_id'] = user.id
+                        request.session['pre_2fa_device_id'] = dispositivo.id
+                        return redirect('verify_2fa')
+                    
+                    # Login directo si no tiene 2FA o dispositivo es confiable
+                    return complete_login(request, user, dispositivo)
+                    
+                except Exception as e:
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.error(f"Error en verificación de dispositivo: {e}")
+                    form.add_error(None, 'Error interno del servidor. Intenta nuevamente.')
             else:
                 form.add_error(None, 'Correo electrónico o contraseña inválidos.')
     else:
@@ -403,18 +410,26 @@ def get_device_fingerprint(request):
     user_agent = request.META.get('HTTP_USER_AGENT', '')
     accept_language = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
     accept_encoding = request.META.get('HTTP_ACCEPT_ENCODING', '')
+    ip_address = get_client_ip(request)
     
     # Crear fingerprint basado en varios factores
-    fingerprint_data = f"{user_agent}{accept_language}{accept_encoding}"
-    return hashlib.sha256(fingerprint_data.encode()).hexdigest()
+    fingerprint_data = f"{user_agent}{accept_language}{accept_encoding}{ip_address}"
+    return hashlib.sha256(fingerprint_data.encode()).hexdigest()[:16]  # Usar solo 16 caracteres
 
 
 def parse_user_agent(user_agent_string):
     """Parsea el user agent para extraer información del dispositivo"""
     user_agent = parse(user_agent_string)
+    
+    # Manejar casos donde los valores pueden ser None
+    browser_family = user_agent.browser.family or "Desconocido"
+    browser_version = user_agent.browser.version_string or ""
+    os_family = user_agent.os.family or "Desconocido"
+    os_version = user_agent.os.version_string or ""
+    
     return {
-        'navegador': f"{user_agent.browser.family} {user_agent.browser.version_string}",
-        'sistema_operativo': f"{user_agent.os.family} {user_agent.os.version_string}",
+        'navegador': f"{browser_family} {browser_version}".strip(),
+        'sistema_operativo': f"{os_family} {os_version}".strip(),
         'es_mobile': user_agent.is_mobile,
         'es_tablet': user_agent.is_tablet,
         'es_pc': user_agent.is_pc
@@ -441,29 +456,47 @@ def verificar_dispositivo(request, usuario):
         user_agent_info = parse_user_agent(request.META.get('HTTP_USER_AGENT', ''))
         location_info = get_location_from_ip(ip_address)
         
-        dispositivo = DispositivoUsuario.objects.create(
-            usuario=usuario,
-            fingerprint=fingerprint,
-            user_agent=request.META.get('HTTP_USER_AGENT', ''),
-            ip_address=ip_address,
-            navegador=user_agent_info['navegador'],
-            sistema_operativo=user_agent_info['sistema_operativo'],
-            ciudad=location_info.get('ciudad', ''),
-            pais=location_info.get('pais', ''),
-            nombre_dispositivo=f"{user_agent_info['sistema_operativo']} - {user_agent_info['navegador']}"
-        )
+        # Crear nombre del dispositivo más descriptivo
+        if user_agent_info['es_mobile']:
+            tipo_dispositivo = "Móvil"
+        elif user_agent_info['es_tablet']:
+            tipo_dispositivo = "Tablet"
+        else:
+            tipo_dispositivo = "PC"
         
-        # Crear notificación de nuevo dispositivo
-        NotificacionSeguridad.objects.create(
-            usuario=usuario,
-            tipo='nuevo_dispositivo',
-            titulo='Nuevo dispositivo detectado',
-            mensaje=f'Se ha detectado un inicio de sesión desde un nuevo dispositivo: {dispositivo.nombre_dispositivo}',
-            ip_origen=ip_address,
-            dispositivo=dispositivo
-        )
+        nombre_dispositivo = f"{tipo_dispositivo} - {user_agent_info['navegador']}"
         
-        # Enviar email de notificación
-        enviar_notificacion_nuevo_dispositivo(usuario, dispositivo)
-        
-        return dispositivo, True  # Dispositivo nuevo
+        try:
+            dispositivo = DispositivoUsuario.objects.create(
+                usuario=usuario,
+                fingerprint=fingerprint,
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                ip_address=ip_address,
+                navegador=user_agent_info['navegador'],
+                sistema_operativo=user_agent_info['sistema_operativo'],
+                ciudad=location_info.get('ciudad', ''),
+                pais=location_info.get('pais', ''),
+                nombre_dispositivo=nombre_dispositivo
+            )
+            
+            # Crear notificación de nuevo dispositivo
+            NotificacionSeguridad.objects.create(
+                usuario=usuario,
+                tipo='nuevo_dispositivo',
+                titulo='Nuevo dispositivo detectado',
+                mensaje=f'Se ha detectado un inicio de sesión desde un nuevo dispositivo: {dispositivo.nombre_dispositivo}',
+                ip_origen=ip_address,
+                dispositivo=dispositivo
+            )
+            
+            # Enviar email de notificación
+            enviar_notificacion_nuevo_dispositivo(usuario, dispositivo)
+            
+            return dispositivo, True  # Dispositivo nuevo
+            
+        except Exception as e:
+            # Log del error para debugging
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error creando dispositivo: {e}")
+            raise e
